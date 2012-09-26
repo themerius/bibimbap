@@ -136,7 +136,7 @@ case class BibTeXEntry(tpe: Option[BibTeXEntryTypes.BibTeXEntryType],
 
   def inlineFrom(xref: BibTeXEntry): BibTeXEntry = {
 
-    var newFields = fields
+    var newFields    = fields
     var newSeqFields = seqFields
 
     for (field <- stdFields) {
