@@ -195,7 +195,7 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
 
         parser.entries.toList match {
           case mainEntry :: crossRef :: _ =>
-            res.copy(entry = mainEntry)
+            res.copy(entry = res.entry inlineFrom mainEntry)
           case _ =>
             res
         }

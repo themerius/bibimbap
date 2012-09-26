@@ -134,6 +134,23 @@ case class BibTeXEntry(tpe: Option[BibTeXEntryTypes.BibTeXEntryType],
 
   val allFields = fields.keySet ++ seqFields.keySet
 
+  def inlineFrom(xref: BibTeXEntry): BibTeXEntry = {
+
+    var newFields = fields
+    var newSeqFields = seqFields
+
+    for (field <- stdFields) {
+      if (!fields.contains(field) && xref.fields.contains(field)) {
+        newFields += field -> xref.fields(field)
+      }
+      if (!seqFields.contains(field) && xref.seqFields.contains(field)) {
+        newSeqFields += field -> xref.seqFields(field)
+      }
+    }
+
+    copy(fields = fields, seqFields = newSeqFields)
+  }
+
   // Checks whether a bibtexentry may be the same with another
   def like(that: BibTeXEntry): Boolean = {
     def compField(a: Option[MString], b: Option[MString]) = (a,b) match {
