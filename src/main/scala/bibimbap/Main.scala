@@ -9,6 +9,11 @@ object Main {
     val configFileName = homeDir + ".bibimbapconfig"
     val historyFileName = homeDir + ".bibimbaphistory"
 
+    if(args.length >= 1 && args(0) == "noboot") {
+      println("Won't boot.");
+      sys.exit(0);
+    }
+
     val system  = ActorSystem("bibimbap")
 
     val settings = (new ConfigFileParser(configFileName)).parse.getOrElse(DefaultSettings)
