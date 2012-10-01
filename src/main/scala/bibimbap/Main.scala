@@ -1,20 +1,24 @@
 package bibimbap
 
 import akka.actor._
+import com.typesafe.config.ConfigFactory
 
 object Main {
-  def main(args: Array[String]): Unit = {
+  def main(args : Array[String]) : Unit = run(args, None)
+
+  def boot(args : Array[String], cl : ClassLoader) : Unit = run(args, Some(cl))
+
+  private def run(args : Array[String], cl : Option[ClassLoader]) : Unit = {
     val homeDir = System.getProperty("user.home") + System.getProperty("file.separator")
 
     val configFileName = homeDir + ".bibimbapconfig"
     val historyFileName = homeDir + ".bibimbaphistory"
 
-    if(args.length >= 1 && args(0) == "noboot") {
-      println("Won't boot.");
-      sys.exit(0);
+    val system  = cl.map { c =>
+      ActorSystem("bibimbap", ConfigFactory.load(c), c)
+    } getOrElse {
+      ActorSystem("bibimbap")
     }
-
-    val system  = ActorSystem("bibimbap")
 
     val settings = (new ConfigFileParser(configFileName)).parse.getOrElse(DefaultSettings)
 
