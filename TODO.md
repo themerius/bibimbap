@@ -1,3 +1,5 @@
+- Refactor package names bibimbap => io.bibimbap
+
 - Implement consolidate.
 
 - Strings:
