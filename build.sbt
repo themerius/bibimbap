@@ -6,7 +6,7 @@ name := "bibimbap"
 
 version := "0.1.0"
 
-scalaVersion := "2.10.0-M6"
+scalaVersion := "2.10.0-M7"
 
 scalacOptions += "-deprecation"
 
