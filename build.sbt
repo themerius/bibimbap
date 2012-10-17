@@ -6,7 +6,7 @@ name := "bibimbap"
 
 version := "0.1.0"
 
-scalaVersion := "2.10.0-M6"
+scalaVersion := "2.10.0-M7"
 
 scalacOptions += "-deprecation"
 
@@ -26,7 +26,7 @@ libraryDependencies ++= Seq(
     "org.apache.lucene" % "lucene-core" % "3.6.0",
     "commons-io" % "commons-io" % "2.4",
     "org.apache.commons" % "commons-lang3" % "3.1",
-    "com.typesafe.akka" % "akka-actor" % "2.1-M1"
+    "com.typesafe.akka" % "akka-actor_2.10.0-M7" % "2.1-M2"
 )
 
 mainClass in (Compile, run) := Some("io.bibimbap.Main")
