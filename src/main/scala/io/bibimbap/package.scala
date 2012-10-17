@@ -1,3 +1,5 @@
+package io
+
 import akka.actor._
 import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext
