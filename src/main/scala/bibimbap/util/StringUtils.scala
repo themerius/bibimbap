@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 package util
 
 import org.apache.commons.lang3.{StringUtils=>ApacheStringUtils}

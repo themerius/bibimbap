@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 import scala.io.Source
 import java.io.File

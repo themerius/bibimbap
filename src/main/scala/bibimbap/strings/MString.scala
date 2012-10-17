@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 package strings
 
 ///** A wrapper around strings to support converting to and from different formats. */

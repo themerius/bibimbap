@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 case class SearchResult(entry: bibtex.BibTeXEntry,
                         sources: Set[String],

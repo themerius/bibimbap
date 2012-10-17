@@ -1,6 +1,6 @@
-package bibimbap.tests
+package io.bibimbap.tests
 
-import bibimbap.strings._
+import io.bibimbap.strings._
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers

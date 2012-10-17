@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 package modules
 
 import akka.actor._
@@ -10,7 +10,7 @@ import util.StringUtils
 import java.net.URLEncoder
 
 import json._
-import io.Source
+import scala.io.Source
 
 class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settings) extends SearchProvider with WebProvider {
   val name   = "Search DBLP"

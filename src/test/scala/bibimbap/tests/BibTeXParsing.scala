@@ -1,6 +1,6 @@
-package bibimbap.tests
+package io.bibimbap.tests
 
-import bibimbap.bibtex._
+import io.bibimbap.bibtex._
 
 import scala.io.Source
 

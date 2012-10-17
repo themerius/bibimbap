@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 import scala.reflect.ClassTag
 import akka.actor._
@@ -25,7 +25,7 @@ class Repl(homeDir: String, configFileName: String, historyFileName: String) ext
   }
 
   def startModules() {
-    import bibimbap.modules._
+    import io.bibimbap.modules._
 
     val managed      = context.actorOf(Props(new Managed(self, console, settings)),      name = "managed");
 

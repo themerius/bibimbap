@@ -29,4 +29,4 @@ libraryDependencies ++= Seq(
     "com.typesafe.akka" % "akka-actor" % "2.1-M1"
 )
 
-mainClass in (Compile, run) := Some("bibimbap.Main")
+mainClass in (Compile, run) := Some("io.bibimbap.Main")

@@ -1,7 +1,7 @@
-package bibimbap
+package io.bibimbap
 package bibtex
 
-import bibimbap.strings._
+import io.bibimbap.strings._
 
 object BibTeXEntryTypes extends Enumeration {
   type BibTeXEntryType = Value

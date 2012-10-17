@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 import scala.reflect.ClassTag
 import akka.actor._

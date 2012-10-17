@@ -1,7 +1,7 @@
-package bibimbap.tests.issues
+package io.bibimbap.tests.issues
 
-import bibimbap.bibtex._
-import bibimbap.strings._
+import io.bibimbap.bibtex._
+import io.bibimbap.strings._
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers

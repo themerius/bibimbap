@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 package object strings {
   import language.implicitConversions

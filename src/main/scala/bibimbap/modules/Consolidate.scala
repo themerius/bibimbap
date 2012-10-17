@@ -1,10 +1,10 @@
-package bibimbap
+package io.bibimbap
 package modules
 
 import akka.actor._
 import bibtex._
 import strings._
-import io.Source
+import scala.io.Source
 import java.io.{FileWriter, File}
 
 class Consolidate(val repl: ActorRef, val console: ActorRef, val settings: Settings) extends Module {

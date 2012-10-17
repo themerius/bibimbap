@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 import bibtex._
 import strings._

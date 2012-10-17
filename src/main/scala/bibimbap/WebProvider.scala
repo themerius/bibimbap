@@ -1,8 +1,8 @@
-package bibimbap
+package io.bibimbap
 
 import akka.actor.ActorRef
 
-import io.Source
+import scala.io.Source
 
 import java.net.URL
 import java.net.URLEncoder

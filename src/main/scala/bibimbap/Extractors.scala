@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 abstract class ExCommand(val limit: Int) {
   def unapplySeq(cmd: InputCommand): Option[Seq[String]] = {

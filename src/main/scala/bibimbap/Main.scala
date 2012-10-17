@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 import akka.actor._
 import com.typesafe.config.ConfigFactory

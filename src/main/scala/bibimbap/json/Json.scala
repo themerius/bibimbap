@@ -1,4 +1,4 @@
-package bibimbap.json
+package io.bibimbap.json
 
 import scala.util.parsing.json.Lexer
 import scala.util.parsing.combinator._

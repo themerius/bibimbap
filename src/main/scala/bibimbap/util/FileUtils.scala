@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 package util
 
 import java.io.{File,FileInputStream}

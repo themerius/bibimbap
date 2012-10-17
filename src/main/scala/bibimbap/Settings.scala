@@ -1,4 +1,4 @@
-package bibimbap
+package io.bibimbap
 
 trait Settings {
   def apply(moduleName : String, key : String) : String =
