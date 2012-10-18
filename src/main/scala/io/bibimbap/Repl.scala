@@ -41,6 +41,7 @@ class Repl(homeDir: String, configFileName: String, historyFileName: String) ext
       "results"     -> context.actorOf(Props(new ResultStore(self, console, settings)),             name = "results"),
       "wizard"      -> context.actorOf(Props(new Wizard(self, console, settings)),                  name = "wizard"),
       "consolidate" -> context.actorOf(Props(new Consolidate(self, console, settings)),             name = "consolidate"),
+      "pdf"         -> context.actorOf(Props(new PDF(self, console, settings)),                     name = "pdf"),
       "managed"     -> managed
     )
 
