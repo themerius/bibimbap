@@ -242,7 +242,7 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
     }
   }
 
-  val Pages = """(\d+)([\s-]+)(\d+)""".r
+  private val Pages = """(\d+)([\s-]+)(\d+)""".r
   private def cleanupPages(pages : String) : String = pages.trim match {
     case Pages(start, _, end) => start + "--" + end
     case other => other
