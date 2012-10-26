@@ -54,6 +54,9 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
   // e.g. "Logical Methods in Computer Science (LMCS) 4(4) (2008)"
   private val JourVenueStr3 = """(.*) (\d+)\((\d+)\) \((\d\d\d\d)\)""".r
 
+  // Book entries
+  private val BookVenueStr1 = """(.*) (\d\d\d\d)""".r
+
   private def recordToResult(record : JValue) : Option[SearchResult] = {
     def yr2yr(year : Option[String]) : Option[MString] =
       year.map(str => MString.fromJava(str.trim))
@@ -121,7 +124,7 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
               case JString(os) => console ! Warning("Could not extract venue information from string [" + os + "]."); (None, None, None)
               case _ => (None, None, None)
             }
-            val omap = Map[String, Option[MString]](
+            val emap = Map[String, Option[MString]](
                 "title"     -> Some(title),
                 "author"    -> Some(authors),
                 "booktitle" -> venue.map(MString.fromJava),
@@ -131,11 +134,9 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
                 "url"       -> url,
                 "doi"       -> doi,
                 "dblp"      -> dblpID
-            )
+            ).filterNot(_._2.isEmpty).mapValues(_.get)
 
-            val map = omap.filterNot(_._2.isEmpty).mapValues(_.get)
-
-            val entry = BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.InProceedings), optKey, map, console ! Error(_))
+            val entry = BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.InProceedings), optKey, emap, console ! Error(_))
 
             entry.map(SearchResult(_, Set(source), score))
           }
@@ -154,7 +155,7 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
             if(isCoRR) {
               None
             } else {
-              val omap = Map[String, Option[MString]](
+              val emap = Map[String, Option[MString]](
                 "author"    -> Some(authors),
                 "title"     -> Some(title),
                 "journal"   -> jour.map(MString.fromJava),
@@ -166,12 +167,26 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
                 "url"       -> url,
                 "doi"       -> doi,
                 "dblp"      -> dblpID
-              )
+              ).filterNot(_._2.isEmpty).mapValues(_.get)
 
-              val map = omap.filterNot(_._2.isEmpty).mapValues(_.get)
-
-              BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.Article), optKey, map, console ! Error(_)).map(SearchResult(_, Set(source), score))
+              BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.Article), optKey, emap, console ! Error(_)).map(SearchResult(_, Set(source), score))
             }
+          }
+
+          case JString("book") => {
+            val (publisher,yr) = (obj \ "dblp:venue" \ "text") match {
+              case JString(BookVenueStr1(p,y)) => (Some(p), Some(y))
+              case _ => (None, None)
+            }
+
+            val emap = Map[String, Option[MString]](
+              "author"     -> Some(authors),
+              "title"      -> Some(title),
+              "year"       -> yr2yr(yr).orElse(year),
+              "publisher"  -> publisher
+            ).filterNot(_._2.isEmpty).mapValues(_.get)
+
+            BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.Book), optKey, emap, console ! Error(_)).map(SearchResult(_, Set(source), score))
           }
 
           case JString(other) => {
