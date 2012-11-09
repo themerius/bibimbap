@@ -16,6 +16,8 @@ import org.apache.lucene.store._
 import org.apache.lucene.util.Version
 
 trait LuceneBackend {
+  private val JAVAPREFIX = "java-"
+  private val LATEXPREFIX = "latex-"
 
   val console: ActorRef
   val source: String
@@ -80,7 +82,12 @@ trait LuceneBackend {
       val doc = new Document()
 
       for((k,v) <- entry.entryMap) {
-        doc.add(new Field(k, v.toJava, Field.Store.YES, Field.Index.NO))
+        v.java.foreach { javaStr =>
+          doc.add(new Field(JAVAPREFIX + k, javaStr, Field.Store.YES, Field.Index.NO))
+        }
+        v.latex.foreach { latexStr =>
+          doc.add(new Field(LATEXPREFIX + k, latexStr, Field.Store.YES, Field.Index.NO))
+        }
       }
 
       doc.add(new Field("__key",  entry.getKey, Field.Store.YES, Field.Index.NOT_ANALYZED))
@@ -121,10 +128,30 @@ trait LuceneBackend {
 
   def documentToEntry(document: Document): Option[BibTeXEntry] = {
     import scala.collection.JavaConversions._
-    val em : Map[String,MString] = document.getFields().collect{
-      case f if !f.name.startsWith("__") =>
-        (f.name -> MString.fromJava(f.stringValue))
-    }.toMap
+
+    var em : Map[String,MString] = Map.empty
+
+    for(f <- document.getFields() if f.name.startsWith(JAVAPREFIX) || f.name.startsWith(LATEXPREFIX)) {
+      val (fn, ms) = if(f.name.startsWith(JAVAPREFIX)) {
+        val fn = f.name.substring(JAVAPREFIX.length)
+        val ms = em.get(fn).map { s =>
+          s.copy(java = Some(f.stringValue))
+        } getOrElse {
+          MString.fromJava(f.stringValue)
+        }
+        (fn, ms)
+      } else {
+        val fn = f.name.substring(LATEXPREFIX.length)
+        val ms = em.get(fn).map { s =>
+          s.copy(latex = Some(f.stringValue))
+        } getOrElse {
+          MString.fromLaTeX(f.stringValue)
+        }
+        (fn, ms)
+      }
+
+      em = em.updated(fn, ms)
+    }
 
     val optKey = document.get("__key") match {
       case null => None

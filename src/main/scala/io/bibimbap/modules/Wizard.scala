@@ -92,17 +92,17 @@ class Wizard(val repl: ActorRef, val console: ActorRef, val settings: Settings) 
       val otherFields = fields - field
       val isStillReq  = !reqFields.satisfiedBy(otherFields.keySet)
 
-     getFieldValue(field, isStillReq, fields.get(field).map(_.toJava)) match {
+     getFieldValue(field, isStillReq, fields.get(field).map(_.toLaTeX)) match {
         case Some(v) =>
-          fields += field -> MString.fromJava(v)
+          fields += field -> MString.fromLaTeX(v)
         case _ =>
       }
     }
 
     for (field <- BibTeXEntryTypes.optionalFieldsFor(tpe)) {
-      getFieldValue(field, false, fields.get(field).map(_.toJava)) match {
+      getFieldValue(field, false, fields.get(field).map(_.toLaTeX)) match {
         case Some(v) =>
-          fields += field -> MString.fromJava(v)
+          fields += field -> MString.fromLaTeX(v)
         case _ =>
       }
     }

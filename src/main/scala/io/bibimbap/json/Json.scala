@@ -5,7 +5,11 @@ import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.syntactical._
 import scala.util.parsing.combinator.lexical._
 
-class JSONParser extends StdTokenParsers with ImplicitConversions {
+import io.bibimbap.{Parser=>BibimbapParser}
+
+class JSONParser extends StdTokenParsers with ImplicitConversions with BibimbapParser[JValue] {
+  val typeDesc : String = "JSON"
+
   // Fill in abstract defs
   type Tokens = Lexer
   val lexical = new Tokens
@@ -15,28 +19,27 @@ class JSONParser extends StdTokenParsers with ImplicitConversions {
   lexical.delimiters ++= List("{", "}", "[", "]", ":", ",")
 
   /** Type signature for functions that can parse numeric literals */
-  type NumericParser = String => Any
+  private type NumericParser = String => Any
  
   // Define the grammar
-//  def root       = jsonObj | jsonArray
-  def jsonObj    = "{" ~> repsep(objEntry, ",") <~ "}" ^^ { case vals : List[_] => JObject(Map[String, JValue]() ++ vals) }
-  def objEntry   = stringVal ~ (":" ~> value) ^^ { case x ~ y => (x, y) }
+  private def jsonObj    = "{" ~> repsep(objEntry, ",") <~ "}" ^^ { case vals : List[_] => JObject(Map[String, JValue]() ++ vals) }
+  private def objEntry   = stringVal ~ (":" ~> value) ^^ { case x ~ y => (x, y) }
 
-  def jsonArray  = "[" ~> repsep(value, ",") <~ "]" ^^ { case vals : List[_] => JArray(vals) }
+  private def jsonArray  = "[" ~> repsep(value, ",") <~ "]" ^^ { case vals : List[_] => JArray(vals) }
 
-  def stringVal  = accept("string", { case lexical.StringLit(n) => n} )
+  private def stringVal  = accept("string", { case lexical.StringLit(n) => n} )
 
-  def dblpMalformedString = "{" ~> stringVal <~ "}"
+  private def dblpMalformedString = "{" ~> stringVal <~ "}"
 
   private val IsInt = """-?\d+""".r
 
-  def number     = accept("number", { 
+  private def number     = accept("number", { 
     case lexical.NumericLit(n) => n match {
       case IsInt() => JInt(n.toInt)
       case _       => JDouble(n.toDouble)
   }})
 
-  def value: Parser[JValue] = (jsonObj |
+  private def value: Parser[JValue] = (jsonObj |
                                jsonArray |
                                number |
                                "true" ^^^ JTrue |
@@ -51,16 +54,6 @@ class JSONParser extends StdTokenParsers with ImplicitConversions {
       case Success(x, _) => Right(x)
       case NoSuccess(err, next) =>
         Left("Failed to parse JSON input (line " + next.pos.line + ", column " + next.pos.column + ").")
-    }
-  }
-
-  def parse(content : String) : JValue = {
-    parseOpt(content) match {
-      case Left(error) =>
-        println(error)
-        JNull
-      case Right(value) =>
-        value
     }
   }
 }

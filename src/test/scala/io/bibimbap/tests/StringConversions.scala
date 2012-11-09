@@ -28,6 +28,22 @@ class StringConversions extends FunSuite with ShouldMatchers {
     produces("β-conversion", """$\beta$-conversion""")
     produces("élémentaire", """\'{e}l\'{e}mentaire""")
     produces("C#", """C{\#}""")
+  }
 
+  test("fromLaTeX/toLaTeX is idempotent") {
+    def c(str : String) {
+      MString.fromLaTeX(str).toLaTeX should equal (str)
+    }
+
+    c("""No LaTeX""")
+    c("""{J}ava""")
+  }
+
+  test("Conjoining") {
+    val j1 = MString.fromJava("salt")
+    val j2 = MString.fromJava("pepper")
+    assert(MString.conjoin(Nil).toJava === "")
+    assert(MString.conjoin(List(j1)).toJava === "salt")
+    assert(MString.conjoin(List(j1,j2)).toJava === "salt and pepper")
   }
 }

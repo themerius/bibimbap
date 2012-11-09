@@ -35,7 +35,7 @@ class BibTeXParser(src : Source, error : String=>Unit) {
   }
 
   def entries : Stream[BibTeXEntry] = rawEntries.flatten.flatMap { raw =>
-    val newMap : Map[String,MString] = raw.pairs.mapValues(s => MString.fromJava(s))
+    val newMap : Map[String,MString] = raw.pairs.mapValues(s => MString.fromLaTeX(s))
     val kind = BibTeXEntryTypes.withNameOpt(raw.kind)
     BibTeXEntry.fromEntryMap(kind, Some(raw.key), newMap, error)
   }
@@ -370,7 +370,7 @@ class BibTeXParser(src : Source, error : String=>Unit) {
             if(openCount > 0) {
               ERROR("Unclosed { in string.").setPos(tokenPos)
             } else {
-              STRING(StringUtils.normalizeSpace(builder.toString)).setPos(tokenPos)
+              STRING(builder.toString).setPos(tokenPos)
             }
           }).setPos(tokenPos)
         }

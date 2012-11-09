@@ -120,8 +120,6 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
             (None, None)
         }
 
-
-
         val year : Option[MString] = (obj \ "year") match {
           case JInt(bigInt) => Some(MString.fromJava(bigInt.toString))
           case _ => None
@@ -218,11 +216,6 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
             BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.InCollection), optKey, emap, console ! Error(_)).map(SearchResult(_, Set(source), score))
           }
 
-          case JString(other) => {
-            // info("Other type : \"" + other + "\"")
-            None
-          }
-
           case _ => None
         }
       }
@@ -238,8 +231,43 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
         val parser = new BibTeXParser(Source.fromString(entries.mkString("\n\n")), console ! Warning(_))
 
         parser.entries.toList match {
-          case mainEntry :: crossRef :: _ =>
-            res.copy(entry = res.entry inlineFrom mainEntry)
+          // This means we could parse at least one entry. It could have been two, since DBLP shows two entries for conference proceedings,
+          // but our BibTeX parser inlines the relevant fields from the second one into the first one anyway.
+          case sndEntry :: _ => 
+            val fstEntry = res.entry
+            val mgdEntry = res.entry inlineFrom sndEntry
+
+            // We prefer LaTeX format for these, so we pick it from the LaTeX.
+            // We drop the url field because this is always a DBLP link.
+            val ttlEntry = mgdEntry.drop("url").pickFrom(sndEntry, "title", "author", "editor")
+
+            // ...and now, a hack to shorten to LNCS, etc.
+            val fnlEntry = ttlEntry.fields.get("series").map { ms =>
+              val newSeries = ms.toJava match { 
+                case "Lecture Notes in Computer Science" => MString.fromJava("LNCS")
+                case "Lecture Notes in Artificial Intelligence" => MString.fromJava("LNAI")
+                case _ => ms
+              }
+
+              if(newSeries == ms) {
+                ttlEntry
+              } else {
+                ttlEntry.copy(fields = ttlEntry.fields.updated("series", newSeries))
+              }
+            } getOrElse {
+              ttlEntry
+            }
+
+            // Looking for a doi somewhere in the soup.
+            val doi = sndEntry.fields.get("ee").flatMap(ms => DOI.extract(ms.toJava)).orElse(sndEntry.fields.get("url").flatMap(ms => DOI.extract(ms.toJava)))
+            val withDOI = doi.map { d =>
+              fnlEntry.updateField("doi", MString.fromJava(d))
+            } getOrElse {
+              fnlEntry
+            }
+
+            res.copy(entry = withDOI)
+
           case _ =>
             res
         }
