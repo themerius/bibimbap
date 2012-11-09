@@ -1,4 +1,5 @@
 package io.bibimbap.tests
+package bibtex
 
 import io.bibimbap.bibtex._
 
