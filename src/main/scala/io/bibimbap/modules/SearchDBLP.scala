@@ -71,7 +71,7 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
       case _ => None
     }
 
-    val optKey = None;
+    val optKey = None
 
     val url = (record \ "url") match {
       case JString(str) =>
@@ -80,20 +80,20 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
         None
     }
 
-    (record \ "title") match {
+    (record \ "info" ) match {
       case obj : JObject => {
-        val authors : MString = MString.fromJava(((obj \ "dblp:authors" \ "dblp:author") match {
+        val authors : MString = MString.fromJava(((obj \ "authors" \ "author") match {
           case JArray(elems) => elems.collect { case JString(str) => str }
           case JString(single) => Seq(single)
           case _ => Nil
         }).mkString(" and "))
 
-        val title : MString = (obj \ "dblp:title" \ "text") match {
+        val title : MString = (obj \ "title" \ "text") match {
           case JString(str) => MString.fromJava(cleanupTitle(str))
           case _ => unknown
         }
 
-        val (link, doi) = (obj \ "dblp:title" \ "@ee") match {
+        val (link, doi) = (obj \ "title" \ "@ee") match {
           case JString(str) => 
             val doi = if (str.startsWith("http://doi.acm.org/")) {
               Some(str.substring("http://doi.acm.org/".length, str.length))
@@ -110,15 +110,15 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
 
 
 
-        val year : Option[MString] = (obj \ "dblp:year") match {
+        val year : Option[MString] = (obj \ "year") match {
           case JInt(bigInt) => Some(MString.fromJava(bigInt.toString))
           case _ => None
         }
 
         // Some of the info is entry type specific, so we now check the type.
-        (obj \ "dblp:type") match {
+        (obj \ "type") match {
           case JString("inproceedings") => {
-            val (venue,venueYear,pages) = (obj \ "dblp:venue" \ "text") match {
+            val (venue,venueYear,pages) = (obj \ "venue" \ "text") match {
               case JString(ConfVenueStr1(v, y, p)) => (Some(cleanupVenue(v)), Some(y), Some(cleanupPages(p)))
               case JString(ConfVenueStr2(v, y)) => (Some(cleanupVenue(v)), Some(y), None)
               case JString(os) => console ! Warning("Could not extract venue information from string [" + os + "]."); (None, None, None)
@@ -142,8 +142,8 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
           }
 
           case JString("article") => {
-            // info("In article : " + (obj \ "dblp:venue" \ "text"))
-            val (isCoRR,jour,vol,num,pgs,yr) = (obj \ "dblp:venue" \ "text") match {
+            // info("In article : " + (obj \ "venue" \ "text"))
+            val (isCoRR,jour,vol,num,pgs,yr) = (obj \ "venue" \ "text") match {
               case JString(CoRR(_)) => (true, None, None, None, None, None)
               case JString(JourVenueStr1(j,v,n,p,y)) => (false, Some(cleanupJournal(j)), Some(v), Some(n), Some(cleanupPages(p)), Some(y))
               case JString(JourVenueStr2(j,v,p,y)) => (false, Some(cleanupJournal(j)), Some(v), None, Some(cleanupPages(p)), Some(y))
@@ -174,7 +174,7 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
           }
 
           case JString("book") => {
-            val (publisher,yr) = (obj \ "dblp:venue" \ "text") match {
+            val (publisher,yr) = (obj \ "venue" \ "text") match {
               case JString(BookVenueStr1(p,y)) => (Some(p), Some(y))
               case _ => (None, None)
             }
