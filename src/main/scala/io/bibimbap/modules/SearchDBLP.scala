@@ -57,6 +57,9 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
   // Book entries
   private val BookVenueStr1 = """(.*) (\d\d\d\d)""".r
 
+  // "incollection" entries
+  private val InCollectionVenueStr1 = """(.*) (\d\d\d\d):([\d- ]*)""".r
+
   private def recordToResult(record : JValue) : Option[SearchResult] = {
     def yr2yr(year : Option[String]) : Option[MString] =
       year.map(str => MString.fromJava(str.trim))
@@ -187,6 +190,24 @@ class SearchDBLP(val repl: ActorRef, val console: ActorRef, val settings: Settin
             ).filterNot(_._2.isEmpty).mapValues(_.get)
 
             BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.Book), optKey, emap, console ! Error(_)).map(SearchResult(_, Set(source), score))
+          }
+
+          case JString("incollection") => {
+            // title author booktitle year
+            // editor volume number series type chapter pages address edition month note key
+            val (bkt,yr,p) = (obj \ "venue" \ "text") match {
+              case JString(InCollectionVenueStr1(b,y,p)) => (Some(b),Some(y),Some(cleanupPages(p)))
+              case _ => (None,None,None)
+            }
+
+            val emap = Map[String,Option[MString]](
+              "author"    -> Some(authors),
+              "title"     -> Some(title),
+              "year"      -> yr2yr(yr).orElse(year),
+              "booktitle" -> bkt.map(MString.fromJava)
+            ).filterNot(_._2.isEmpty).mapValues(_.get)
+
+            BibTeXEntry.fromEntryMap(Some(BibTeXEntryTypes.InCollection), optKey, emap, console ! Error(_)).map(SearchResult(_, Set(source), score))
           }
 
           case JString(other) => {
