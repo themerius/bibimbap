@@ -6,8 +6,7 @@ import akka.util.Timeout
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.Await
-import scala.concurrent.util.duration._
-import scala.concurrent.util.Duration
+import scala.concurrent.duration._
 
 trait Module extends Actor with ActorHelpers {
   val settings: Settings

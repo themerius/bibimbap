@@ -8,7 +8,7 @@ import akka.util.Timeout
 import java.util.concurrent.Executors
 import scala.concurrent.Await
 import scala.concurrent.Future
-import scala.concurrent.util.duration._
+import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 
 class Repl(homeDir: String, configFileName: String, historyFileName: String) extends Actor with ActorHelpers {
