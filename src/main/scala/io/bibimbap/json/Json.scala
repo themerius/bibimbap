@@ -26,6 +26,8 @@ class JSONParser extends StdTokenParsers with ImplicitConversions {
 
   def stringVal  = accept("string", { case lexical.StringLit(n) => n} )
 
+  def dblpMalformedString = "{" ~> stringVal <~ "}"
+
   private val IsInt = """-?\d+""".r
 
   def number     = accept("number", { 
@@ -40,15 +42,25 @@ class JSONParser extends StdTokenParsers with ImplicitConversions {
                                "true" ^^^ JTrue |
                                "false" ^^^ JFalse |
                                "null" ^^^ JNull |
-                               stringVal ^^ { str => JString(str) })
+                               stringVal ^^ { str => JString(str) } |
+                               dblpMalformedString ^^ { str => JString(str) }
+                              )
 
-  def parse(content: String): JValue = {
+  def parseOpt(content: String) : Either[String,JValue] = {
     phrase(value)(new lexical.Scanner(content)) match {
-      case Success(x, _) => x
+      case Success(x, _) => Right(x)
       case NoSuccess(err, next) =>
-        println("failed to parse JSON input (line " + next.pos.line + ", column " + next.pos.column + ")")
-        println(content)
+        Left("Failed to parse JSON input (line " + next.pos.line + ", column " + next.pos.column + ").")
+    }
+  }
+
+  def parse(content : String) : JValue = {
+    parseOpt(content) match {
+      case Left(error) =>
+        println(error)
         JNull
+      case Right(value) =>
+        value
     }
   }
 }
