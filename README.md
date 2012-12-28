@@ -13,6 +13,6 @@ Getting bibimbap
 ----------------
 
 The simplest way of running bibimbap is to download and run the
-[http://bibimbap.io/downloads](bootstrapper). This will ensure that you are
+[bootstrapper](http://bibimbap.io/downloads). It will ensure that you are
 always running the latest version.
 
