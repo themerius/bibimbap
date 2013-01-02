@@ -294,6 +294,21 @@ case class BibTeXEntry(tpe: Option[BibTeXEntryTypes.BibTeXEntryType],
       }
     }
   }
+
+  /** Attempts to provide an URL for the entry, first by searching
+    * for relevant fields, then by falling back to DOI. */
+  lazy val getURL : Option[String] = {
+    val realURLField =
+      fields.get("url").orElse(
+        fields.get("link").orElse(
+          fields.get("ee")
+        )
+      )
+
+    realURLField.map(_.toJava).orElse {
+      fields.get("doi").map(doi => "http://dx.doi.org/" + doi.toJava)
+    }
+  }
 }
 
 object BibTeXEntry {

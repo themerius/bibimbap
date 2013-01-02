@@ -76,7 +76,7 @@ class ResultStore(val repl: ActorRef, val console: ActorRef, val settings: Setti
     import java.awt.Desktop
     import java.net.URI
 
-    val ourl = res.entry.url.orElse(res.entry.link).map(_.toJava)
+    val ourl = res.entry.getURL
 
     ourl match {
       case Some(url) =>
