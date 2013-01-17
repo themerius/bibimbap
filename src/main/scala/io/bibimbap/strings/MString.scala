@@ -1,6 +1,9 @@
 package io.bibimbap
 package strings
 
+import java.text.Normalizer
+import Normalizer.Form.{NFC,NFD}
+
 /** A wrapper around strings to support converting to and from different formats. */
 case class MString private(latex: Option[String] = None, java: Option[String] = None, ascii: Option[String] = None) {
   val isEmpty : Boolean = latex.map(_.isEmpty).getOrElse(java.map(_.isEmpty).getOrElse(ascii.map(_.isEmpty).getOrElse(true)))
@@ -70,7 +73,7 @@ object MString {
   val empty : MString = MString(latex = Some(""), java = Some(""), ascii = Some(""))
   val and : MString = MString(latex = Some(" and "), java = Some(" and "), ascii = Some(" and "))
 
-  def fromJava(str : String)  = new MString(java = Some(str))
+  def fromJava(str : String)  = new MString(java = Some(Normalizer.normalize(str, NFC)))
   def fromLaTeX(str : String) = new MString(latex = Some(str))
   def fromASCII(str : String) = new MString(ascii = Some(str))
 
@@ -225,9 +228,6 @@ object MString {
     }
 
     def removeDiacritics(s : String) : String = {
-      import java.text.Normalizer
-      import Normalizer.Form.NFD
-
       Normalizer.normalize(s, NFD).replaceAll("""\p{InCombiningDiacriticalMarks}+""", "")
     }
 
