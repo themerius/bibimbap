@@ -7,6 +7,8 @@ import bibtex._
 import strings._
 import util.StringUtils
 
+import identifiers.DOI
+
 import java.net.URLEncoder
 
 import json._

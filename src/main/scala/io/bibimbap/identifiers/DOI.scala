@@ -1,7 +1,7 @@
 package io.bibimbap
-package bibtex
+package identifiers
 
-object DOI {
+object DOI extends Identifier {
   private val knownPrefixes : Set[String] = Set(
     "http://dx.doi.org/",
     "dx.doi.org/",
@@ -23,4 +23,7 @@ object DOI {
     // Defaulting to good old regexp.
     Basic.findFirstIn(from)
   }
+
+  // We could do better, I'll give you that.
+  def isValid(id : String) = true
 }

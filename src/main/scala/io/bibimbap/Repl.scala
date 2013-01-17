@@ -32,7 +32,8 @@ class Repl(homeDir: String, configFileName: String, historyFileName: String) ext
     val searchSources = List(
       SearchSource(managed, "managed file"),
       SearchSource(context.actorOf(Props(new SearchLocal(self, console, settings)), name = "searchLocal"), "local cache"),
-      SearchSource(context.actorOf(Props(new SearchDBLP(self, console, settings)), name = "searchDBLP"), "DBLP")
+      SearchSource(context.actorOf(Props(new SearchDBLP(self, console, settings)), name = "searchDBLP"), "DBLP"),
+      SearchSource(context.actorOf(Props(new SearchOpenLibrary(self, console, settings)), name = "searchOpenLibrary"), "Open Library")
     )
 
     modules = Map(
