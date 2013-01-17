@@ -135,6 +135,7 @@ case class BibTeXEntry(tpe: Option[BibTeXEntryTypes.BibTeXEntryType],
   def getType: BibTeXEntryTypes.BibTeXEntryType = tpe.getOrElse(BibTeXEntryTypes.Misc)
   def getKey: String = key.getOrElse(generateKey)
 
+  private val FourDigits = """.*(\d{4}).*""".r
   def generateKey: String = {
     val commonWords = Set("", "in", "the", "a", "an", "of", "for", "and", "or", "by", "on", "with")
 
@@ -166,9 +167,12 @@ case class BibTeXEntry(tpe: Option[BibTeXEntryTypes.BibTeXEntryType],
     }
 
     val yr = year match {
-      case Some(y) => {
-        val last = y.toJava.toInt % 100
-        if(last < 10) "0" + last else last.toString
+      case Some(y) => y.toJava match {
+        case FourDigits(ds) =>
+          val last = ds.toJava.toInt % 100
+          if(last < 10) "0" + last else last.toString
+
+        case _ => ""
       }
       case None => ""
     }
