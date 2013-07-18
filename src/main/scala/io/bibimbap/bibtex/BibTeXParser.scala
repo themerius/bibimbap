@@ -293,7 +293,7 @@ class BibTeXParser(src : Source, error : String=>Unit) {
       case _ if Character.isLetterOrDigit(char) => true
       // these should really not be allowed
       case '=' | '{' | '}' | '"' | '@' | '\\' | '#' | '~' | '%' | ',' => false 
-      case ':' | '/' | '-' | '_' => true
+      case ':' | '/' | '-' | '_' | '.' => true
       case _ => false
     }
     private def isValidDigit(char : Char) : Boolean = Character.isDigit(char)
