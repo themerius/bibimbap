@@ -2,6 +2,9 @@
 *.swp
 *.swo
 
+# Mac OS X
+*.DS_Store
+
 # (x)sbt
 project/project
 project/target

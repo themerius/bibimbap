@@ -6,7 +6,6 @@ import strings._
 import util.StringUtils
 
 import scala.io.Source
-import scala.io.Position
 
 import scala.collection.mutable.{Map=>MutableMap}
 
